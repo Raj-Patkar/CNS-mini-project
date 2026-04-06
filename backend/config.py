@@ -3,7 +3,9 @@ TIMEOUT = 5
 SQLI_PAYLOADS = [
     "' OR '1'='1",
     "' OR 1=1 --",
-    "\" OR \"a\"=\"a"
+    "\" OR \"a\"=\"a",
+    "admin'--",
+    "' OR 1=1#",
 ]
 
 XSS_PAYLOADS = [
