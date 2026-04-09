@@ -127,11 +127,55 @@ http://127.0.0.1:5000
 
 ## 🧪 Testing
 
-Test the API using tools like Postman.
+### Prerequisites
 
-Target application:
+Start OWASP Juice Shop using Docker:
+```bash
+docker run -p 3000:3000 bkimminich/juice-shop
+```
 
-* OWASP Juice Shop
+> First run will take a minute to download the image. Once you see `Server listening on port 3000`, it's ready. Verify at `http://localhost:3000`.
+
+---
+
+### Testing SQLi via Postman
+
+### Endpoint:
+```
+POST http://127.0.0.1:5000/api/scan
+```
+**Request Body:**
+```json
+{
+  "url": "http://localhost:3000"
+}
+```
+
+**Expected Response (vulnerable):**
+```json
+{
+  "target": "http://localhost:3000",
+  "sqli": {
+    "vulnerable": true,
+    "payload": "' OR '1'='1",
+    "endpoint": "http://localhost:3000/rest/user/login",
+    "status_code": 200,
+    "fix": "Use parameterized queries or an ORM. Never interpolate user input directly into SQL strings."
+  }
+}
+```
+
+**If Juice Shop is not running:**
+```json
+{
+  "sqli": {
+    "vulnerable": false,
+    "error": "Could not connect to http://localhost:3000/rest/user/login. Is Juice Shop running?"
+  }
+}
+```
+
+> Scan results are automatically saved to `backend/report/sample.json` after every request.
 
 ---
 
