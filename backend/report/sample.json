@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-06T19:31:51.103797Z",
+  "timestamp": "2026-04-09T11:19:30.766360Z",
   "results": {
     "target": "http://localhost:3000",
     "sqli": {
@@ -10,15 +10,44 @@
       "fix": "Use parameterized queries or an ORM. Never interpolate user input directly into SQL strings. Also enforce input validation on the email field."
     },
     "xss": {
-      "vulnerable": false
+      "vulnerable": false,
+      "message": "No reflected XSS detected (or requires DOM-based detection)"
     },
     "auth_bypass": {
       "vulnerable": true,
+      "type": "Authentication Bypass",
+      "severity": "HIGH",
+      "confidence": "High",
+      "endpoint": "http://localhost:3000/rest/user/login",
       "payload": {
         "username": "admin",
         "password": "' OR '1'='1"
       },
-      "fix": "Implement proper authentication and validation"
+      "evidence": "Login response did not contain failure message",
+      "fix": [
+        "Implement proper authentication checks",
+        "Use parameterized queries",
+        "Validate user credentials strictly",
+        "Implement account lockout mechanisms"
+      ]
+    },
+    "headers": {
+      "vulnerable": true,
+      "type": "Security Misconfiguration",
+      "severity": "MEDIUM",
+      "confidence": "High",
+      "issue": "Missing important security headers",
+      "missing_headers": [
+        {
+          "header": "Content-Security-Policy",
+          "risk": "Helps prevent XSS attacks"
+        },
+        {
+          "header": "Strict-Transport-Security",
+          "risk": "Enforces HTTPS"
+        }
+      ],
+      "fix": "Configure proper HTTP security headers on the server"
     }
   }
 }

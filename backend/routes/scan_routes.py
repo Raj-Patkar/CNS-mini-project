@@ -5,6 +5,7 @@ from flask import Blueprint, request, jsonify
 from scanner.sqli import detect_sqli
 from scanner.xss import detect_xss
 from scanner.auth_bypass import detect_auth_bypass
+from scanner.headers import check_security_headers
 
 scan_bp = Blueprint("scan", __name__)
 
@@ -46,6 +47,7 @@ def scan():
         "sqli": detect_sqli(url),
         "xss": detect_xss(url),
         "auth_bypass": detect_auth_bypass(url),
+        "headers": check_security_headers(url),
     }
 
     # --- Save to report ---
