@@ -1,13 +1,17 @@
 {
-  "timestamp": "2026-04-09T11:19:30.766360Z",
+  "timestamp": "2026-04-09T11:31:54.408964Z",
   "results": {
     "target": "http://localhost:3000",
     "sqli": {
       "vulnerable": true,
-      "payload": "' OR 1=1 --",
+      "type": "SQL Injection",
+      "severity": "HIGH",
+      "confidence": "High",
       "endpoint": "http://localhost:3000/rest/user/login",
+      "payload": "' OR 1=1 --",
       "status_code": 200,
-      "fix": "Use parameterized queries or an ORM. Never interpolate user input directly into SQL strings. Also enforce input validation on the email field."
+      "evidence": "Login succeeded with injected SQL payload",
+      "fix": "Use parameterized queries or an ORM. Never interpolate user input directly into SQL strings. Also enforce strict input validation."
     },
     "xss": {
       "vulnerable": false,
