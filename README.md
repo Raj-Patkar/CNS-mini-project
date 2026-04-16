@@ -113,6 +113,8 @@ POST http://127.0.0.1:5000/api/scan
 ```bash
 git clone <repo-url>
 cd backend
+python -m venv venv
+venv\Scripts\activate
 pip install -r requirements.txt
 python app.py
 ```

@@ -2,10 +2,14 @@ import json
 import os
 from datetime import datetime
 from flask import Blueprint, request, jsonify
+
 from scanner.sqli import detect_sqli
-from scanner.xss import detect_xss
 from scanner.auth_bypass import detect_auth_bypass
 from scanner.headers import check_security_headers
+
+# ✅ Updated XSS imports
+from scanner.xss import detect_reflected_xss
+from scanner.xss_dom import detect_dom_xss
 
 scan_bp = Blueprint("scan", __name__)
 
@@ -42,10 +46,21 @@ def scan():
         return jsonify({"error": "Invalid URL. Must start with http:// or https://"}), 400
 
     # --- Run scanners ---
+
+    # 🔥 Run both XSS scanners separately
+    reflected_xss_result = detect_reflected_xss(url)
+    dom_xss_result = detect_dom_xss(url)
+
+    # 🔥 Combine XSS results
+    xss_result = {
+        "reflected": reflected_xss_result,
+        "dom": dom_xss_result
+    }
+
     results = {
         "target": url,
         "sqli": detect_sqli(url),
-        "xss": detect_xss(url),
+        "xss": xss_result,
         "auth_bypass": detect_auth_bypass(url),
         "headers": check_security_headers(url),
     }
