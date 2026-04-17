@@ -260,7 +260,7 @@ export default function Results({ data }: { data: ScanResult }) {
         </VulnCard>
       </motion.div>
 
-      {/* DOM XSS */}
+      {/* XSS (Combined) */}
       <motion.div
         variants={{
           hidden: { opacity: 0, y: 20 },
@@ -268,39 +268,76 @@ export default function Results({ data }: { data: ScanResult }) {
         }}
       >
         <VulnCard
-          title="DOM XSS"
-          vulnerable={r?.xss?.dom?.vulnerable}
-          severity={r?.xss?.dom?.severity}
+          title="Cross-Site Scripting (XSS)"
+          vulnerable={
+            r?.xss?.dom?.vulnerable ||
+            r?.xss?.reflected?.vulnerable
+          }
+          severity={
+            r?.xss?.dom?.severity ||
+            r?.xss?.reflected?.severity
+          }
           summary={
-            r?.xss?.dom?.vulnerable
-              ? `${r.xss.dom.type} · ${r.xss.dom.confidence} confidence`
+            r?.xss?.dom?.vulnerable || r?.xss?.reflected?.vulnerable
+              ? "DOM / Reflected XSS detected"
               : "No issues detected"
           }
         >
-          <Field label="Type">{r.xss?.dom?.type}</Field>
-          <Field label="Confidence">{r.xss?.dom?.confidence}</Field>
-          <Field label="Endpoint">
-            <span className="font-mono text-slate-600 text-xs">
-              {r.xss?.dom?.endpoint}
-            </span>
-          </Field>
-          <Field label="Payload">
-            <CodeBlock>{r.xss?.dom?.payload}</CodeBlock>
-          </Field>
-          <Field label="Evidence">
-            <p className="text-slate-600">{r.xss?.dom?.evidence}</p>
-          </Field>
-          <Field label="Remediation">
-            <FixBlock>
-              {r.xss?.dom?.fix?.map((f, i) => (
-                <p key={i}>• {f}</p>
-              ))}
-            </FixBlock>
-          </Field>
+          {/* 🔹 DOM XSS */}
+          {r.xss?.dom?.vulnerable && (
+            <div className="border border-slate-100 rounded-xl p-4 bg-slate-50 space-y-3">
+              <Field label="Type">{r.xss.dom.type}</Field>
+              <Field label="Confidence">{r.xss.dom.confidence}</Field>
+
+              <Field label="Endpoint">
+                <span className="font-mono text-slate-600 text-xs">
+                  {r.xss.dom.endpoint}
+                </span>
+              </Field>
+
+              <Field label="Payload">
+                <CodeBlock>{r.xss.dom.payload}</CodeBlock>
+              </Field>
+
+              <Field label="Evidence">
+                <p className="text-slate-600">{r.xss.dom.evidence}</p>
+              </Field>
+
+              <Field label="Remediation">
+                <FixBlock>
+                  {r.xss.dom.fix?.map((f, i) => (
+                    <p key={i}>• {f}</p>
+                  ))}
+                </FixBlock>
+              </Field>
+            </div>
+          )}
+
+          {/* 🔹 Reflected XSS */}
+          <div className="border border-slate-100 rounded-xl p-4 bg-slate-50 space-y-3">
+            <Field label="Type">Reflected XSS</Field>
+
+            {r.xss?.reflected?.vulnerable ? (
+              <>
+                <Field label="Confidence">
+                  {r.xss.reflected.confidence}
+                </Field>
+              </>
+            ) : (
+              <p className="text-green-600 text-sm">
+                {r.xss?.reflected?.message || "No reflected XSS detected"}
+              </p>
+            )}
+          </div>
+
+          {/* 🔹 No XSS */}
+          {!r.xss?.dom?.vulnerable && !r.xss?.reflected?.vulnerable && (
+            <p className="text-green-600 text-sm">
+              {r.xss?.reflected?.message || "No XSS vulnerabilities detected"}
+            </p>
+          )}
         </VulnCard>
       </motion.div>
-
-
 
 
 

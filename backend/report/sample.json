@@ -1,30 +1,20 @@
 {
-  "timestamp": "2026-04-17T15:59:50.372157Z",
+  "timestamp": "2026-04-17T17:28:59.792401Z",
   "results": {
-    "target": "http://localhost:3001",
+    "target": "http://localhost:3000",
     "sqli": {
       "vulnerable": true,
       "type": "SQL Injection",
-      "severity": "HIGH",
+      "severity": "MEDIUM",
       "confidence": "High",
       "findings": [
-        {
-          "type": "Error-based SQL Injection",
-          "severity": "HIGH",
-          "confidence": "High",
-          "endpoint": "http://localhost:3001/rest/products/search?q=' OR 1=1 --",
-          "payload": "' OR 1=1 --",
-          "status_code": 500,
-          "evidence": "Database error message detected in response",
-          "fix": "Use parameterized queries and avoid exposing DB errors"
-        },
         {
           "type": "Boolean-based SQL Injection",
           "severity": "MEDIUM",
           "confidence": "Medium",
-          "endpoint": "http://localhost:3001/rest/products/search?q=' OR 'a'='a",
-          "payload": "' OR 'a'='a",
-          "status_code": 200,
+          "endpoint": "http://localhost:3000/rest/products/search?q=' OR 1=1 --",
+          "payload": "' OR 1=1 --",
+          "status_code": 404,
           "evidence": "Response content differs from baseline request, indicating possible SQL query manipulation",
           "fix": "Sanitize inputs and use prepared statements"
         }
@@ -41,8 +31,8 @@
         "type": "DOM-based XSS",
         "severity": "HIGH",
         "confidence": "High",
-        "payload": "<img src=x onerror=alert(1)>",
-        "endpoint": "http://localhost:3001",
+        "payload": "<script>alert(1)</script>",
+        "endpoint": "http://localhost:3000",
         "evidence": "JavaScript alert executed in browser",
         "fix": [
           "Sanitize DOM inputs",
@@ -56,7 +46,7 @@
       "type": "Authentication Bypass",
       "severity": "HIGH",
       "confidence": "High",
-      "endpoint": "http://localhost:3001/rest/user/login",
+      "endpoint": "http://localhost:3000/rest/user/login",
       "payload": {
         "username": "admin",
         "password": "' OR '1'='1"
@@ -81,9 +71,29 @@
           "risk": "Helps prevent XSS attacks",
           "severity": "HIGH",
           "endpoints": [
-            "http://localhost:3001",
-            "http://localhost:3001/login",
-            "http://localhost:3001/admin"
+            "http://localhost:3000",
+            "http://localhost:3000/login",
+            "http://localhost:3000/admin"
+          ]
+        },
+        {
+          "header": "x-frame-options",
+          "risk": "Prevents clickjacking",
+          "severity": "MEDIUM",
+          "endpoints": [
+            "http://localhost:3000",
+            "http://localhost:3000/login",
+            "http://localhost:3000/admin"
+          ]
+        },
+        {
+          "header": "x-content-type-options",
+          "risk": "Prevents MIME sniffing",
+          "severity": "LOW",
+          "endpoints": [
+            "http://localhost:3000",
+            "http://localhost:3000/login",
+            "http://localhost:3000/admin"
           ]
         },
         {
@@ -91,9 +101,9 @@
           "risk": "Enforces HTTPS",
           "severity": "HIGH",
           "endpoints": [
-            "http://localhost:3001",
-            "http://localhost:3001/login",
-            "http://localhost:3001/admin"
+            "http://localhost:3000",
+            "http://localhost:3000/login",
+            "http://localhost:3000/admin"
           ]
         },
         {
@@ -101,9 +111,9 @@
           "risk": "Controls referrer information leakage",
           "severity": "LOW",
           "endpoints": [
-            "http://localhost:3001",
-            "http://localhost:3001/login",
-            "http://localhost:3001/admin"
+            "http://localhost:3000",
+            "http://localhost:3000/login",
+            "http://localhost:3000/admin"
           ]
         }
       ],
