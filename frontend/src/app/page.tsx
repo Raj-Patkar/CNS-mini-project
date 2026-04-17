@@ -7,10 +7,10 @@ export default function Home() {
       <nav className="w-full px-8 py-4 bg-white border-b border-slate-100 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold tracking-tight text-slate-900">
-            🔐 VulnScan
+            ShieldProbe
           </span>
           <span className="ml-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">
-            beta
+            Vulnerability Scanner
           </span>
         </div>
         <div className="flex items-center gap-3 text-sm text-slate-400 font-medium">

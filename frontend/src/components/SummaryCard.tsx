@@ -20,9 +20,7 @@ export default function SummaryCard({ data }: { data: ScanResult }) {
           Target
         </p>
         <p className="text-slate-800 font-semibold text-sm break-all">{data.target}</p>
-        <p className="text-xs text-slate-400 mt-1">
-          {data?.timestamp ? new Date(data.timestamp).toLocaleString() : "N/A"}
-        </p>
+        
       </div>
 
       {/* Divider */}
