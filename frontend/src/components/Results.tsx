@@ -3,7 +3,7 @@ import SummaryCard from "./SummaryCard";
 import VulnCard from "./VulnCard";
 
 export default function Results({ data }: { data: ScanResult }) {
-  const r = data?.results;
+  const r = data;
   if (!r) return null;
 
   return (
@@ -11,7 +11,7 @@ export default function Results({ data }: { data: ScanResult }) {
 
       <SummaryCard data={data} />
 
-      <VulnCard title="SQL Injection" vulnerable={r?.sqli?.vulnerable}>
+      <VulnCard title="SQL Injection" vulnerable={r?.sqli?.vulnerable} severity={r?.sqli?.severity}>
         {r?.sqli?.vulnerable && (
           <>
             <p>Endpoint: {r.sqli.endpoint}</p>
@@ -21,7 +21,7 @@ export default function Results({ data }: { data: ScanResult }) {
         )}
       </VulnCard>
 
-      <VulnCard title="DOM XSS" vulnerable={r?.xss?.dom?.vulnerable}>
+      <VulnCard title="DOM XSS" vulnerable={r?.xss?.dom?.vulnerable} severity={r?.xss?.dom?.severity}>
         {r?.xss?.dom?.vulnerable && (
           <>
             <p>Payload: {r.xss.dom.payload}</p>
@@ -31,15 +31,32 @@ export default function Results({ data }: { data: ScanResult }) {
         )}
       </VulnCard>
 
-      <VulnCard title="Authentication Bypass" vulnerable={r?.auth_bypass?.vulnerable}>
+      <VulnCard
+        title="Authentication Bypass"
+        vulnerable={r?.auth_bypass?.vulnerable}
+        severity={r?.auth_bypass?.severity}
+      >
         {r?.auth_bypass?.vulnerable && (
           <>
-            <p>Endpoint: {r.auth_bypass.endpoint}</p>
+            <p><strong>Type:</strong> {r.auth_bypass.type}</p>
+            <p><strong>Confidence:</strong> {r.auth_bypass.confidence}</p>
+
+            <p className="mt-2"><strong>Endpoint:</strong> {r.auth_bypass.endpoint}</p>
+
             <p>
-              Payload: {r.auth_bypass.payload?.username} /{" "}
-              {r.auth_bypass.payload?.password}
+              <strong>Payload:</strong>{" "}
+              {r.auth_bypass.payload?.username} / {r.auth_bypass.payload?.password}
             </p>
-            <p>Evidence: {r.auth_bypass.evidence}</p>
+
+            <p><strong>Evidence:</strong> {r.auth_bypass.evidence}</p>
+
+            {/* FIX SECTION */}
+            <div className="mt-2">
+              <p className="font-semibold text-green-400">Fix:</p>
+              {r.auth_bypass.fix?.map((f, i) => (
+                <p key={i}>• {f}</p>
+              ))}
+            </div>
           </>
         )}
       </VulnCard>

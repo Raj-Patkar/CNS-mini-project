@@ -1,48 +1,59 @@
 export interface ScanResult {
-  timestamp: string;
-  results: {
-    target: string;
+  target: string;
+  timestamp?: string;
 
-    sqli: {
+  sqli: {
+    vulnerable: boolean;
+    type?: string;
+    severity?: string;
+    confidence?: string;
+    endpoint?: string;
+    payload?: string;
+    evidence?: string;
+    fix?: string;
+  };
+
+  xss: {
+    reflected: {
       vulnerable: boolean;
-      severity: string;
-      endpoint?: string;
+      message?: string;
+      severity?: string;
+      confidence?: string;
+    };
+    dom: {
+      vulnerable: boolean;
+      type?: string;
+      severity?: string;
+      confidence?: string;
       payload?: string;
-      evidence?: string;
-      fix?: string;
-    };
-
-    xss: {
-      reflected: {
-        vulnerable: boolean;
-        message?: string;
-      };
-      dom: {
-        vulnerable: boolean;
-        payload?: string;
-        endpoint?: string;
-        evidence?: string;
-        fix?: string[];
-      };
-    };
-
-    auth_bypass: {
-      vulnerable: boolean;
-      payload?: {
-        username: string;
-        password: string;
-      };
       endpoint?: string;
       evidence?: string;
       fix?: string[];
     };
+  };
 
-    headers: {
-      vulnerable: boolean;
-      missing_headers?: {
-        header: string;
-        risk: string;
-      }[];
+  auth_bypass: {
+    vulnerable: boolean;
+    type?: string;
+    severity?: string;
+    confidence?: string;
+    payload?: {
+      username: string;
+      password: string;
     };
+    endpoint?: string;
+    evidence?: string;
+    fix?: string[];
+  };
+
+  headers: {
+    vulnerable: boolean;
+    type?: string;
+    severity?: string;
+    confidence?: string;
+    missing_headers?: {
+      header: string;
+      risk: string;
+    }[];
   };
 }
