@@ -9,7 +9,7 @@ export default function SummaryCard({ data }: { data: ScanResult }) {
       <h2 className="text-xl font-semibold mb-2">Scan Summary</h2>
 
       <p className="text-gray-400">Target:</p>
-      <p className="mb-3">{data.target}</p>
+      <p className="mb-3">{data.results.target}</p>
 
       <p className="text-gray-400">Timestamp:</p>
       <p className="mb-3">{new Date(data.timestamp).toLocaleString()}</p>

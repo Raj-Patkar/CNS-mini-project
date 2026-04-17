@@ -3,7 +3,7 @@ import SummaryCard from "./SummaryCard";
 import VulnCard from "./VulnCard";
 
 export default function Results({ data }: { data: ScanResult }) {
-  const r = data;
+  const r = data?.results;
   if (!r) return null;
 
   return (
