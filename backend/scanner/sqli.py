@@ -17,27 +17,31 @@ def detect_sqli(base_url):
         "unterminated"
     ]
 
+    findings = []
+
     for endpoint in endpoints:
         try:
-            # 🔹 Baseline request (normal)
+            # 🔹 Baseline request
             normal_res = requests.get(endpoint + "test", timeout=TIMEOUT)
             normal_text = normal_res.text.lower()
+            baseline_time = normal_res.elapsed.total_seconds()
 
             for payload in SQLI_PAYLOADS:
                 target_url = endpoint + payload
 
-                # 🔹 Send payload
-                start_time = time.time()
-                res = requests.get(target_url, timeout=TIMEOUT)
-                end_time = time.time()
+                try:
+                    start_time = time.time()
+                    res = requests.get(target_url, timeout=TIMEOUT)
+                    end_time = time.time()
+                except requests.exceptions.RequestException:
+                    continue
 
                 response_text = res.text.lower()
                 response_time = end_time - start_time
 
-                # ✅ 1. Error-based detection
+                #  1. Error-based SQLi
                 if any(err in response_text for err in error_keywords):
-                    return {
-                        "vulnerable": True,
+                    findings.append({
                         "type": "Error-based SQL Injection",
                         "severity": "HIGH",
                         "confidence": "High",
@@ -46,26 +50,24 @@ def detect_sqli(base_url):
                         "status_code": res.status_code,
                         "evidence": "Database error message detected in response",
                         "fix": "Use parameterized queries and avoid exposing DB errors"
-                    }
+                    })
 
-                # ✅ 2. Boolean-based detection (response difference)
-                if abs(len(response_text) - len(normal_text)) > 50:
-                    return {
-                        "vulnerable": True,
+                #  2. Boolean-based SQLi (better logic)
+                elif response_text != normal_text:
+                    findings.append({
                         "type": "Boolean-based SQL Injection",
                         "severity": "MEDIUM",
                         "confidence": "Medium",
                         "endpoint": target_url,
                         "payload": payload,
                         "status_code": res.status_code,
-                        "evidence": "Response differs from normal input",
+                        "evidence": "Response content differs from baseline request, indicating possible SQL query manipulation",
                         "fix": "Sanitize inputs and use prepared statements"
-                    }
+                    })
 
-                # ✅ 3. Time-based detection
-                if response_time > 4:
-                    return {
-                        "vulnerable": True,
+                #  3. Time-based SQLi (baseline comparison)
+                elif (response_time - baseline_time) > 3:
+                    findings.append({
                         "type": "Time-based SQL Injection",
                         "severity": "HIGH",
                         "confidence": "Medium",
@@ -74,10 +76,35 @@ def detect_sqli(base_url):
                         "status_code": res.status_code,
                         "evidence": f"Delayed response detected ({round(response_time,2)}s)",
                         "fix": "Use parameterized queries and limit query execution time"
-                    }
+                    })
 
         except requests.exceptions.RequestException:
             continue
+
+    #  Deduplicate by type (important)
+    unique_findings = {}
+    for f in findings:
+        key = f["type"]
+        if key not in unique_findings:
+            unique_findings[key] = f
+
+    findings = list(unique_findings.values())
+
+    #  Final response
+    if findings:
+        severity = "LOW"
+        if any(f["severity"] == "HIGH" for f in findings):
+            severity = "HIGH"
+        elif any(f["severity"] == "MEDIUM" for f in findings):
+            severity = "MEDIUM"
+
+        return {
+            "vulnerable": True,
+            "type": "SQL Injection",
+            "severity": severity,
+            "confidence": "High",
+            "findings": findings
+        }
 
     return {
         "vulnerable": False,

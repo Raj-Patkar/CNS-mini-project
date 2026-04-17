@@ -37,7 +37,7 @@ def check_security_headers(base_url):
 
             headers = {k.lower(): v for k, v in res.headers.items()}
 
-            # 🔹 Missing headers check (DEDUP FIX)
+            #  Missing headers check (DEDUP FIX)
             for header, info in required_headers.items():
                 if header not in headers:
                     if header not in issues_map:
@@ -49,7 +49,7 @@ def check_security_headers(base_url):
                         }
                     issues_map[header]["endpoints"].append(url)
 
-            # 🔹 X-Frame-Options validation
+            #  X-Frame-Options validation
             if "x-frame-options" in headers:
                 if headers["x-frame-options"].upper() not in ["DENY", "SAMEORIGIN"]:
                     key = "x-frame-options-invalid"
@@ -62,7 +62,7 @@ def check_security_headers(base_url):
                         }
                     issues_map[key]["endpoints"].append(url)
 
-            # 🔹 X-Content-Type-Options validation
+            #  X-Content-Type-Options validation
             if "x-content-type-options" in headers:
                 if headers["x-content-type-options"].lower() != "nosniff":
                     key = "x-content-type-options-invalid"
@@ -75,7 +75,7 @@ def check_security_headers(base_url):
                         }
                     issues_map[key]["endpoints"].append(url)
 
-            # 🔹 Cookie security checks
+            #  Cookie security checks
             cookies = res.headers.get("Set-Cookie", "")
 
             if cookies:
@@ -101,10 +101,10 @@ def check_security_headers(base_url):
                         }
                     issues_map[key]["endpoints"].append(url)
 
-        # ✅ Convert map → list
+        #  Convert map → list
         all_issues = list(issues_map.values())
 
-        # 🔥 Overall severity calculation
+        #  Overall severity calculation
         severity = "LOW"
         if any(i["severity"] == "HIGH" for i in all_issues):
             severity = "HIGH"

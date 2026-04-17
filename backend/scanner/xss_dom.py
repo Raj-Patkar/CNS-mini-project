@@ -9,7 +9,7 @@ def detect_dom_xss(base_url):
 
             page.goto(base_url)
 
-            # 🔥 STEP 1: CLOSE WELCOME POPUP
+            #  STEP 1: CLOSE WELCOME POPUP
             try:
                 page.wait_for_selector('button:has-text("Dismiss")', timeout=5000)
                 page.click('button:has-text("Dismiss")')
@@ -18,7 +18,7 @@ def detect_dom_xss(base_url):
 
             page.wait_for_timeout(2000)
 
-            # 🔥 STEP 2: OPEN SEARCH BAR
+            #  STEP 2: OPEN SEARCH BAR
             try:
                 page.click('mat-icon:has-text("search")')
             except:
@@ -30,14 +30,14 @@ def detect_dom_xss(base_url):
                 try:
                     detected = {"flag": False}
 
-                    # 🔥 STEP 3: ATTACH ALERT LISTENER BEFORE ACTION
+                    #  STEP 3: ATTACH ALERT LISTENER BEFORE ACTION
                     def handle_dialog(dialog):
                         dialog.dismiss()
                         detected["flag"] = True
 
                     page.on("dialog", handle_dialog)
 
-                    # 🔥 STEP 4: FIND SEARCH INPUT
+                    #  STEP 4: FIND SEARCH INPUT
                     search_box = page.locator('input[type="text"]').first
 
                     search_box.click()
@@ -51,7 +51,7 @@ def detect_dom_xss(base_url):
                     # Wait for JS execution
                     page.wait_for_timeout(2000)
 
-                    # 🔥 STEP 5: CHECK IF ALERT TRIGGERED
+                    #  STEP 5: CHECK IF ALERT TRIGGERED
                     if detected["flag"]:
                         browser.close()
                         return {
