@@ -1,86 +1,86 @@
 import requests
+import time
 from config import SQLI_PAYLOADS, TIMEOUT
 
-
 def detect_sqli(base_url):
-    """
-    Tests for SQL Injection on the /rest/user/login endpoint of OWASP Juice Shop.
+    endpoints = [
+        f"{base_url}/rest/products/search?q=",
+        f"{base_url}/rest/products/",
+    ]
 
-        Strategy:
-    - Inject SQLi payloads into the 'email' field
-    - A fixed dummy password is used so only the email field is being tested
-    - If login succeeds (i.e., no 'authentication failed' in response and
-      status != 401), the endpoint is considered vulnerable 
-    """
-    url = f"{base_url}/rest/user/login"
-    results = []
+    error_keywords = [
+        "sql syntax",
+        "mysql",
+        "sqlite",
+        "syntax error",
+        "unexpected token",
+        "unterminated"
+    ]
 
-    for payload in SQLI_PAYLOADS:
-        data = {
-            "email": payload,       # Injecting only into email field
-            "password": "dummy123"  # Fixed password — not the injection point
-        }
-
+    for endpoint in endpoints:
         try:
-            res = requests.post(url, json=data, timeout=TIMEOUT)
-            response_text = res.text.lower()
-            status_code = res.status_code
-            # Juice Shop returns 401 + "Invalid email or password" on failure
-            # A successful SQLi bypass returns 200 with a token
-            is_vulnerable = (
-                status_code == 200 and
-                "authentication failed" not in response_text and
-                "invalid email" not in response_text
-            )
+            # 🔹 Baseline request (normal)
+            normal_res = requests.get(endpoint + "test", timeout=TIMEOUT)
+            normal_text = normal_res.text.lower()
 
-            if is_vulnerable:
-                return {
-                    "vulnerable": True,
-                    "type": "SQL Injection",
-                    "severity": "HIGH",
-                    "confidence": "High",
-                    "endpoint": url,
-                    "payload": payload,
-                    "status_code": status_code,
-                    "evidence": "Login succeeded with injected SQL payload",
-                    "fix": (
-                        "Use parameterized queries or an ORM. "
-                        "Never interpolate user input directly into SQL strings. "
-                        "Also enforce strict input validation on the email field."
-                    )
-                }
-            
-            # Track attempted payloads for debugging
-            results.append({
-                "payload": payload,
-                "status_code": status_code,
-                "result": "not vulnerable"
-            })
+            for payload in SQLI_PAYLOADS:
+                target_url = endpoint + payload
 
-        except requests.exceptions.ConnectionError:
-            return {
-                "vulnerable": False,
-                "error": f"Could not connect to {url}. Is Juice Shop running?",
-                "confidence": "Low"
-            }
+                # 🔹 Send payload
+                start_time = time.time()
+                res = requests.get(target_url, timeout=TIMEOUT)
+                end_time = time.time()
 
-        except requests.exceptions.Timeout:
-            return {
-                "vulnerable": False,
-                "error": f"Request timed out after {TIMEOUT}s for payload: {payload}",
-                "confidence": "Low"
-            }
+                response_text = res.text.lower()
+                response_time = end_time - start_time
 
-        except Exception as e:
-            return {
-                "vulnerable": False,
-                "error": str(e),
-                "confidence": "Low"
-            }
+                # ✅ 1. Error-based detection
+                if any(err in response_text for err in error_keywords):
+                    return {
+                        "vulnerable": True,
+                        "type": "Error-based SQL Injection",
+                        "severity": "HIGH",
+                        "confidence": "High",
+                        "endpoint": target_url,
+                        "payload": payload,
+                        "status_code": res.status_code,
+                        "evidence": "Database error message detected in response",
+                        "fix": "Use parameterized queries and avoid exposing DB errors"
+                    }
+
+                # ✅ 2. Boolean-based detection (response difference)
+                if abs(len(response_text) - len(normal_text)) > 50:
+                    return {
+                        "vulnerable": True,
+                        "type": "Boolean-based SQL Injection",
+                        "severity": "MEDIUM",
+                        "confidence": "Medium",
+                        "endpoint": target_url,
+                        "payload": payload,
+                        "status_code": res.status_code,
+                        "evidence": "Response differs from normal input",
+                        "fix": "Sanitize inputs and use prepared statements"
+                    }
+
+                # ✅ 3. Time-based detection
+                if response_time > 4:
+                    return {
+                        "vulnerable": True,
+                        "type": "Time-based SQL Injection",
+                        "severity": "HIGH",
+                        "confidence": "Medium",
+                        "endpoint": target_url,
+                        "payload": payload,
+                        "status_code": res.status_code,
+                        "evidence": f"Delayed response detected ({round(response_time,2)}s)",
+                        "fix": "Use parameterized queries and limit query execution time"
+                    }
+
+        except requests.exceptions.RequestException:
+            continue
 
     return {
         "vulnerable": False,
-        "message": "No SQL Injection detected with current payloads",
-        "tested_payloads": results,
+        "message": "No SQL Injection detected",
         "confidence": "Low"
     }

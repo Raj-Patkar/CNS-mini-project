@@ -196,27 +196,67 @@ export default function Results({ data }: { data: ScanResult }) {
           severity={r?.sqli?.severity}
           summary={
             r?.sqli?.vulnerable
-              ? `${r.sqli.type} · ${r.sqli.confidence} confidence`
+              ? `${r.sqli.findings?.length} SQLi type(s) detected`
               : "No issues detected"
           }
         >
-          <Field label="Type">{r.sqli?.type}</Field>
-          <Field label="Confidence">{r.sqli?.confidence}</Field>
-          <Field label="Endpoint">
-            <span className="font-mono text-slate-600 text-xs">
-              {r.sqli?.endpoint}
-            </span>
-          </Field>
-          <Field label="Status Code">{r.sqli?.status_code}</Field>
-          <Field label="Payload">
-            <CodeBlock>{r.sqli?.payload}</CodeBlock>
-          </Field>
-          <Field label="Evidence">
-            <p className="text-slate-600">{r.sqli?.evidence}</p>
-          </Field>
-          <Field label="Remediation">
-            <FixBlock>{r.sqli?.fix}</FixBlock>
-          </Field>
+          {r.sqli?.findings?.length ? (
+            r.sqli.findings.map((f, i) => (
+              <div
+                key={i}
+                className="border border-slate-100 rounded-xl p-4 bg-slate-50 space-y-3"
+              >
+                <Field label="Type">{f.type}</Field>
+                <Field label="Confidence">{f.confidence}</Field>
+
+                <Field label="Endpoint">
+                  <span className="font-mono text-slate-600 text-xs">
+                    {f.endpoint}
+                  </span>
+                </Field>
+
+                <Field label="Status Code">{f.status_code}</Field>
+
+                <Field label="Payload">
+                  <CodeBlock>{f.payload}</CodeBlock>
+                </Field>
+
+                <Field label="Evidence">
+                  <p className="text-slate-600">{f.evidence}</p>
+                </Field>
+
+                <Field label="Remediation">
+                  <FixBlock>{f.fix}</FixBlock>
+                </Field>
+              </div>
+            ))
+          ) : (
+            // 🔥 FALLBACK (old format support)
+            <>
+              <Field label="Type">{r.sqli?.type}</Field>
+              <Field label="Confidence">{r.sqli?.confidence}</Field>
+
+              <Field label="Endpoint">
+                <span className="font-mono text-slate-600 text-xs">
+                  {r.sqli?.endpoint}
+                </span>
+              </Field>
+
+              <Field label="Status Code">{r.sqli?.status_code}</Field>
+
+              <Field label="Payload">
+                <CodeBlock>{r.sqli?.payload}</CodeBlock>
+              </Field>
+
+              <Field label="Evidence">
+                <p className="text-slate-600">{r.sqli?.evidence}</p>
+              </Field>
+
+              <Field label="Remediation">
+                <FixBlock>{r.sqli?.fix}</FixBlock>
+              </Field>
+            </>
+          )}
         </VulnCard>
       </motion.div>
 

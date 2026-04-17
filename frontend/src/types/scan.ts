@@ -7,11 +7,25 @@ export interface ScanResult {
     type?: string;
     severity?: string;
     confidence?: string;
+
+    // 🔥 ADD ALL THESE (for fallback compatibility)
     endpoint?: string;
     payload?: string;
     status_code?: number;
     evidence?: string;
     fix?: string;
+
+    // 🔥 NEW STRUCTURE
+    findings?: {
+      type: string;
+      severity: string;
+      confidence: string;
+      endpoint: string;
+      payload: string;
+      status_code: number;
+      evidence: string;
+      fix: string;
+    }[];
   };
 
   xss: {
@@ -58,7 +72,7 @@ export interface ScanResult {
       header: string;
       risk: string;
       severity?: string;
-      endpoint?: string;  
+      endpoint?: string;
     }[];
   };
 }

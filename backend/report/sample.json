@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-04-17T14:56:35.885229Z",
+  "timestamp": "2026-04-17T15:50:10.806261Z",
   "results": {
     "target": "http://localhost:3001",
     "sqli": {
       "vulnerable": true,
-      "type": "SQL Injection",
+      "type": "Error-based SQL Injection",
       "severity": "HIGH",
       "confidence": "High",
-      "endpoint": "http://localhost:3001/rest/user/login",
+      "endpoint": "http://localhost:3001/rest/products/search?q=' OR 1=1 --",
       "payload": "' OR 1=1 --",
-      "status_code": 200,
-      "evidence": "Login succeeded with injected SQL payload",
-      "fix": "Use parameterized queries or an ORM. Never interpolate user input directly into SQL strings. Also enforce strict input validation on the email field."
+      "status_code": 500,
+      "evidence": "Database error message detected in response",
+      "fix": "Use parameterized queries and avoid exposing DB errors"
     },
     "xss": {
       "reflected": {

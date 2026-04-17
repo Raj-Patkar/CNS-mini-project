@@ -3,7 +3,9 @@ import { ScanResult } from "@/types/scan";
 export const calculateRisk = (data: ScanResult) => {
   let score = 0;
 
-  if (data?.sqli?.vulnerable) score += 3;
+  if (data?.sqli?.findings?.length) {
+    score += Math.min(3, data.sqli.findings.length);
+  }
   if (data?.xss?.dom?.vulnerable) score += 3;
   if (data?.auth_bypass?.vulnerable) score += 3;
   if (data?.headers?.vulnerable) score += 1;
