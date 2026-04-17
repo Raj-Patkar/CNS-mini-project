@@ -57,6 +57,8 @@ export interface ScanResult {
     missing_headers?: {
       header: string;
       risk: string;
+      severity?: string;
+      endpoint?: string;  
     }[];
   };
 }

@@ -3,7 +3,7 @@ import { calculateRisk } from "@/lib/risk";
 
 export default function SummaryCard({ data }: { data: ScanResult }) {
   const risk = calculateRisk(data);
-
+  
   const riskBg: Record<string, string> = {
     "text-red-500":   "bg-red-50 text-red-600 border-red-200",
     "text-yellow-400":"bg-yellow-50 text-yellow-600 border-yellow-200",

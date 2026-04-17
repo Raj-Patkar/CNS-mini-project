@@ -53,198 +53,218 @@ export default function Results({ data }: { data: ScanResult }) {
         },
       }}
     >
-      
-        {/* Summary */}
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0 },
-          }}
-        >
-          <SummaryCard data={data} />
-        </motion.div>
-        <RiskChart data={data} />
-        {/* Section Label */}
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-1 mt-2">
-          Vulnerability Checks
-        </p>
 
-        {/* SQL Injection */}
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0 },
-          }}
-        >
-          <VulnCard
-            title="SQL Injection"
-            vulnerable={r?.sqli?.vulnerable}
-            severity={r?.sqli?.severity}
-            summary={
-              r?.sqli?.vulnerable
-                ? `${r.sqli.type} · ${r.sqli.confidence} confidence`
-                : "No issues detected"
-            }
-          >
-            <Field label="Type">{r.sqli?.type}</Field>
-            <Field label="Confidence">{r.sqli?.confidence}</Field>
-            <Field label="Endpoint">
-              <span className="font-mono text-slate-600 text-xs">
-                {r.sqli?.endpoint}
-              </span>
-            </Field>
-            <Field label="Status Code">{r.sqli?.status_code}</Field>
-            <Field label="Payload">
-              <CodeBlock>{r.sqli?.payload}</CodeBlock>
-            </Field>
-            <Field label="Evidence">
-              <p className="text-slate-600">{r.sqli?.evidence}</p>
-            </Field>
-            <Field label="Remediation">
-              <FixBlock>{r.sqli?.fix}</FixBlock>
-            </Field>
-          </VulnCard>
-        </motion.div>
+      {/* Summary */}
+      <motion.div
+        variants={{
+          hidden: { opacity: 0, y: 20 },
+          visible: { opacity: 1, y: 0 },
+        }}
+      >
+        <SummaryCard data={data} />
+      </motion.div>
+      <RiskChart data={data} />
+      {/* Section Label */}
+      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-1 mt-2">
+        Vulnerability Checks
+      </p>
 
-        {/* DOM XSS */}
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0 },
-          }}
+      {/* Security Headers */}
+      <motion.div
+        variants={{
+          hidden: { opacity: 0, y: 20 },
+          visible: { opacity: 1, y: 0 },
+        }}
+      >
+        <VulnCard
+          title="Security Headers"
+          vulnerable={r?.headers?.vulnerable}
+          severity={r?.headers?.severity}
+          summary={
+            r?.headers?.vulnerable
+              ? r.headers.issue
+              : "All required headers present"
+          }
         >
-          <VulnCard
-            title="DOM XSS"
-            vulnerable={r?.xss?.dom?.vulnerable}
-            severity={r?.xss?.dom?.severity}
-            summary={
-              r?.xss?.dom?.vulnerable
-                ? `${r.xss.dom.type} · ${r.xss.dom.confidence} confidence`
-                : "No issues detected"
-            }
-          >
-            <Field label="Type">{r.xss?.dom?.type}</Field>
-            <Field label="Confidence">{r.xss?.dom?.confidence}</Field>
-            <Field label="Endpoint">
-              <span className="font-mono text-slate-600 text-xs">
-                {r.xss?.dom?.endpoint}
-              </span>
-            </Field>
-            <Field label="Payload">
-              <CodeBlock>{r.xss?.dom?.payload}</CodeBlock>
-            </Field>
-            <Field label="Evidence">
-              <p className="text-slate-600">{r.xss?.dom?.evidence}</p>
-            </Field>
-            <Field label="Remediation">
-              <FixBlock>
-                {r.xss?.dom?.fix?.map((f, i) => (
-                  <p key={i}>• {f}</p>
-                ))}
-              </FixBlock>
-            </Field>
-          </VulnCard>
-        </motion.div>
-
-        {/* Authentication Bypass */}
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0 },
-          }}
-        >
-          <VulnCard
-            title="Authentication Bypass"
-            vulnerable={r?.auth_bypass?.vulnerable}
-            severity={r?.auth_bypass?.severity}
-            summary={
-              r?.auth_bypass?.vulnerable
-                ? `${r.auth_bypass.type} · ${r.auth_bypass.confidence} confidence`
-                : "No issues detected"
-            }
-          >
-            <Field label="Type">{r.auth_bypass?.type}</Field>
-            <Field label="Confidence">{r.auth_bypass?.confidence}</Field>
-            <Field label="Endpoint">
-              <span className="font-mono text-slate-600 text-xs">
-                {r.auth_bypass?.endpoint}
-              </span>
-            </Field>
-            <Field label="Payload">
-              <div className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs font-mono space-y-1">
-                <p>
-                  <span className="text-slate-400">Username:</span>{" "}
-                  {r.auth_bypass?.payload?.username}
-                </p>
-                <p>
-                  <span className="text-slate-400">Password:</span>{" "}
-                  <span className="text-red-500">
-                    {r.auth_bypass?.payload?.password}
-                  </span>
-                </p>
-              </div>
-            </Field>
-            <Field label="Evidence">
-              <p className="text-slate-600">{r.auth_bypass?.evidence}</p>
-            </Field>
-            <Field label="Remediation">
-              <FixBlock>
-                {r.auth_bypass?.fix?.map((f, i) => (
-                  <p key={i}>• {f}</p>
-                ))}
-              </FixBlock>
-            </Field>
-          </VulnCard>
-        </motion.div>
-
-        {/* Security Headers */}
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0 },
-          }}
-        >
-          <VulnCard
-            title="Security Headers"
-            vulnerable={r?.headers?.vulnerable}
-            severity={r?.headers?.severity}
-            summary={
-              r?.headers?.vulnerable
-                ? r.headers.issue
-                : "All required headers present"
-            }
-          >
-            <Field label="Type">{r.headers?.type}</Field>
-            <Field label="Confidence">{r.headers?.confidence}</Field>
-            <Field label="Issue">
-              <p className="text-yellow-600 font-medium">
-                {r.headers?.issue}
-              </p>
-            </Field>
-            <Field label="Missing Headers">
-              <div className="space-y-1.5">
-                {r.headers?.missing_headers?.map((h, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-2 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2"
-                  >
+          <Field label="Type">{r.headers?.type}</Field>
+          <Field label="Confidence">{r.headers?.confidence}</Field>
+          <Field label="Issue">
+            <p className="text-yellow-600 font-medium">
+              {r.headers?.issue}
+            </p>
+          </Field>
+          <Field label="Missing Headers">
+            <div className="space-y-1.5">
+              {r.headers?.missing_headers?.map((h, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col gap-1 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2"
+                >
+                  <div className="flex items-center justify-between">
                     <span className="font-mono text-slate-700 text-xs font-semibold">
                       {h.header}
                     </span>
-                    <span className="text-slate-400 text-xs">
-                      → {h.risk}
-                    </span>
+
+                    {/* 🔥 Severity Badge */}
+                    {h.severity && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-200">
+                        {h.severity}
+                      </span>
+                    )}
                   </div>
-                ))}
-              </div>
-            </Field>
-            <Field label="Remediation">
-              <FixBlock>{r.headers?.fix}</FixBlock>
-            </Field>
-          </VulnCard>
-        </motion.div>
-      
-      
+
+                  <span className="text-slate-400 text-xs">
+                    → {h.risk}
+                  </span>
+
+                  {/* 🔥 Endpoint */}
+                  {h.endpoint && (
+                    <span className="text-[10px] text-slate-300 font-mono">
+                      {h.endpoint}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Field>
+          <Field label="Remediation">
+            <FixBlock>{r.headers?.fix}</FixBlock>
+          </Field>
+        </VulnCard>
+      </motion.div>
+
+      {/* Authentication Bypass */}
+      <motion.div
+        variants={{
+          hidden: { opacity: 0, y: 20 },
+          visible: { opacity: 1, y: 0 },
+        }}
+      >
+        <VulnCard
+          title="Authentication Bypass"
+          vulnerable={r?.auth_bypass?.vulnerable}
+          severity={r?.auth_bypass?.severity}
+          summary={
+            r?.auth_bypass?.vulnerable
+              ? `${r.auth_bypass.type} · ${r.auth_bypass.confidence} confidence`
+              : "No issues detected"
+          }
+        >
+          <Field label="Type">{r.auth_bypass?.type}</Field>
+          <Field label="Confidence">{r.auth_bypass?.confidence}</Field>
+          <Field label="Endpoint">
+            <span className="font-mono text-slate-600 text-xs">
+              {r.auth_bypass?.endpoint}
+            </span>
+          </Field>
+          <Field label="Payload">
+            <div className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs font-mono space-y-1">
+              <p>
+                <span className="text-slate-400">Username:</span>{" "}
+                {r.auth_bypass?.payload?.username}
+              </p>
+              <p>
+                <span className="text-slate-400">Password:</span>{" "}
+                <span className="text-red-500">
+                  {r.auth_bypass?.payload?.password}
+                </span>
+              </p>
+            </div>
+          </Field>
+          <Field label="Evidence">
+            <p className="text-slate-600">{r.auth_bypass?.evidence}</p>
+          </Field>
+          <Field label="Remediation">
+            <FixBlock>
+              {r.auth_bypass?.fix?.map((f, i) => (
+                <p key={i}>• {f}</p>
+              ))}
+            </FixBlock>
+          </Field>
+        </VulnCard>
+      </motion.div>
+      {/* SQL Injection */}
+      <motion.div
+        variants={{
+          hidden: { opacity: 0, y: 20 },
+          visible: { opacity: 1, y: 0 },
+        }}
+      >
+        <VulnCard
+          title="SQL Injection"
+          vulnerable={r?.sqli?.vulnerable}
+          severity={r?.sqli?.severity}
+          summary={
+            r?.sqli?.vulnerable
+              ? `${r.sqli.type} · ${r.sqli.confidence} confidence`
+              : "No issues detected"
+          }
+        >
+          <Field label="Type">{r.sqli?.type}</Field>
+          <Field label="Confidence">{r.sqli?.confidence}</Field>
+          <Field label="Endpoint">
+            <span className="font-mono text-slate-600 text-xs">
+              {r.sqli?.endpoint}
+            </span>
+          </Field>
+          <Field label="Status Code">{r.sqli?.status_code}</Field>
+          <Field label="Payload">
+            <CodeBlock>{r.sqli?.payload}</CodeBlock>
+          </Field>
+          <Field label="Evidence">
+            <p className="text-slate-600">{r.sqli?.evidence}</p>
+          </Field>
+          <Field label="Remediation">
+            <FixBlock>{r.sqli?.fix}</FixBlock>
+          </Field>
+        </VulnCard>
+      </motion.div>
+
+      {/* DOM XSS */}
+      <motion.div
+        variants={{
+          hidden: { opacity: 0, y: 20 },
+          visible: { opacity: 1, y: 0 },
+        }}
+      >
+        <VulnCard
+          title="DOM XSS"
+          vulnerable={r?.xss?.dom?.vulnerable}
+          severity={r?.xss?.dom?.severity}
+          summary={
+            r?.xss?.dom?.vulnerable
+              ? `${r.xss.dom.type} · ${r.xss.dom.confidence} confidence`
+              : "No issues detected"
+          }
+        >
+          <Field label="Type">{r.xss?.dom?.type}</Field>
+          <Field label="Confidence">{r.xss?.dom?.confidence}</Field>
+          <Field label="Endpoint">
+            <span className="font-mono text-slate-600 text-xs">
+              {r.xss?.dom?.endpoint}
+            </span>
+          </Field>
+          <Field label="Payload">
+            <CodeBlock>{r.xss?.dom?.payload}</CodeBlock>
+          </Field>
+          <Field label="Evidence">
+            <p className="text-slate-600">{r.xss?.dom?.evidence}</p>
+          </Field>
+          <Field label="Remediation">
+            <FixBlock>
+              {r.xss?.dom?.fix?.map((f, i) => (
+                <p key={i}>• {f}</p>
+              ))}
+            </FixBlock>
+          </Field>
+        </VulnCard>
+      </motion.div>
+
+
+
+
+
+
     </motion.div>
   );
 }

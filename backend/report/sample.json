@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-17T11:31:38.630267Z",
+  "timestamp": "2026-04-17T14:56:35.885229Z",
   "results": {
     "target": "http://localhost:3001",
     "sqli": {
@@ -55,20 +55,42 @@
     "headers": {
       "vulnerable": true,
       "type": "Security Misconfiguration",
-      "severity": "MEDIUM",
+      "severity": "HIGH",
       "confidence": "High",
-      "issue": "Missing important security headers",
+      "issue": "Security headers misconfigured or missing",
       "missing_headers": [
         {
-          "header": "Content-Security-Policy",
-          "risk": "Helps prevent XSS attacks"
+          "header": "content-security-policy",
+          "risk": "Helps prevent XSS attacks",
+          "severity": "HIGH",
+          "endpoints": [
+            "http://localhost:3001",
+            "http://localhost:3001/login",
+            "http://localhost:3001/admin"
+          ]
         },
         {
-          "header": "Strict-Transport-Security",
-          "risk": "Enforces HTTPS"
+          "header": "strict-transport-security",
+          "risk": "Enforces HTTPS",
+          "severity": "HIGH",
+          "endpoints": [
+            "http://localhost:3001",
+            "http://localhost:3001/login",
+            "http://localhost:3001/admin"
+          ]
+        },
+        {
+          "header": "referrer-policy",
+          "risk": "Controls referrer information leakage",
+          "severity": "LOW",
+          "endpoints": [
+            "http://localhost:3001",
+            "http://localhost:3001/login",
+            "http://localhost:3001/admin"
+          ]
         }
       ],
-      "fix": "Configure proper HTTP security headers on the server"
+      "fix": "Implement proper security headers with correct values and cookie flags"
     }
   }
 }
