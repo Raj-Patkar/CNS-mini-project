@@ -9,6 +9,7 @@ export interface ScanResult {
     confidence?: string;
     endpoint?: string;
     payload?: string;
+    status_code?: number;
     evidence?: string;
     fix?: string;
   };
@@ -51,6 +52,8 @@ export interface ScanResult {
     type?: string;
     severity?: string;
     confidence?: string;
+    issue?: string; // ✅ ADD
+    fix?: string; // ✅ ADD
     missing_headers?: {
       header: string;
       risk: string;
